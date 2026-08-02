@@ -1,0 +1,45 @@
+[
+    {
+        "id": "ask_for_age",
+        "text": "🔞 你是否已满十八岁 🔞",
+        "image": "",
+        "options": [
+            { "label": "是", "target": "ask_for_sex" },
+            { "label": "否", "target": "byebye" }
+        ],
+        "next": ""
+    },
+    {
+        "id": "ask_for_sex",
+        "text": "🔞 你是男性还是女性 🔞",
+        "image": "",
+        "options": [
+            { "label": "男", "target": "all done" },
+            { "label": "女", "target": "all done" }
+        ],
+        "next": ""
+    },
+    {
+        "id": "byebye",
+        "text": "🔞 你未满十八岁，无法继续 🔞",
+        "image": "",
+        "options": [],
+        "next": ""
+    },
+    {
+        "id": "all done",
+        "text": "🔞 你的对象已经筛选完毕 🔞 \n 🔞 请点击下方按钮 🔞",
+        "image": "",
+        "options": [
+            {"label": "好的!", "target": "result" }
+        ],
+        "next": ""
+    },
+    {
+        "id": "result",
+        "text": "🔞 筛选成功 : 奶龙 🔞 \n 🔞 奶龙电话号码 : 911 🔞",
+        "image": "nailonog.png",
+        "options": [],
+        "next": ""
+    }
+]
