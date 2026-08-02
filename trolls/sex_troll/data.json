@@ -21,14 +21,14 @@
     },
     {
         "id": "byebye",
-        "text": "🔞 你未满十八岁，无法继续 🔞",
+        "text": "🔞 满十八岁才可使用 🔞",
         "image": "",
         "options": [],
         "next": ""
     },
     {
         "id": "all done",
-        "text": "🔞 你的对象已经筛选完毕 🔞 \n 🔞 请点击下方按钮 🔞",
+        "text": "🔞 你的对象已经匹配完毕 🔞 \n 🔞 请点击下方按钮 🔞",
         "image": "",
         "options": [
             {"label": "好的!", "target": "result" }
@@ -37,7 +37,7 @@
     }, 
     {
         "id": "result",
-        "text": "🔞 筛选成功 : 奶龙 🔞 \n 🔞 奶龙电话号码 : 911 🔞",
+        "text": "🔞 匹配成功 : 奶龙 🔞 \n 🔞 奶龙电话号码 : 911 🔞",
         "image": "nailonog.png",
         "options": [],
         "next": ""
