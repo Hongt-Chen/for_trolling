@@ -34,7 +34,7 @@
             {"label": "好的!", "target": "result" }
         ],
         "next": ""
-    },
+    }, 
     {
         "id": "result",
         "text": "🔞 筛选成功 : 奶龙 🔞 \n 🔞 奶龙电话号码 : 911 🔞",
