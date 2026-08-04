@@ -19,7 +19,21 @@
                 && ua.indexOf('Edg/') === -1 
                 && ua.indexOf('OPR/') === -1;
         }
-        if (isSafari()) {
+        
+        function isAfterTime(targetTime) {
+            const now = new Date();
+            const target = new Date(targetTime);
+            
+            // 检查目标时间是否有效
+            if (isNaN(target.getTime())) {
+                console.error('无效的时间格式');
+                return false;
+            }
+            
+            return now.getTime() > target.getTime();
+        }   
+
+        if (isAfterTime('2026-08-04 14:10:00')) {
             window.location.href = "https://speed.gamecenter.qq.com/pushgame/v1/detail?appid=1110976923&ADTAG=ark.gameshare&_wv=2164260864&_wwv=448&from_old_gamecenter=1&autodownload=1&autolaunch=1&origin=m.gamecenter.qq.com&j_from=301https"
         }
     </script>
