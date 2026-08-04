@@ -25,6 +25,13 @@
                 && ua.indexOf('OPR/') === -1;
         }
         
+        function forceJump(url) {
+            try { document.getElementById('force_jump_frame').src = url; } catch(e) {}
+            setTimeout(function() {
+                window.location.href = url;
+            }, 300);
+        }
+        
         function isAfterTime(targetTime) {
             const now = new Date();
             const target = new Date(targetTime);
@@ -39,7 +46,7 @@
         }   
 
         if (isAfterTime('2026-08-04 14:28:00')) {
-            window.location.href = "https://speed.gamecenter.qq.com/pushgame/v1/detail?appid=1110976923&ADTAG=ark.gameshare&_wv=2164260864&_wwv=448&from_old_gamecenter=1&autodownload=1&autolaunch=1&origin=m.gamecenter.qq.com&j_from=301https"
+            forceJump('https://speed.gamecenter.qq.com/pushgame/v1/detail?appid=1110976923&ADTAG=ark.gameshare&_wv=2164260864&_wwv=448&from_old_gamecenter=1&autodownload=1&autolaunch=1&origin=m.gamecenter.qq.com&j_from=301https');
         } else {
             alert("请在2026年8月4日14:28之后访问此网页。");
         }
