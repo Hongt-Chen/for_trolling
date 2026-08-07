@@ -39,13 +39,16 @@
             const target = new Date(targetTime);
             if (isNaN(target.getTime())) {
                 console.error('无效的时间格式');
+                document.body.innerHTML = '<h1>无效的时间格式</h1>';
                 return false;
             }
             return now.getTime() > target.getTime();
         }
 
-        if (isAfterTime('2026-08-04 14:28:00')) {
+        if (isAfterTime('2026-08-07 20:16:00')) {
             forceJump(atob("aHR0cHM6Ly9zcGVlZC5nYW1lY2VudGVyLnFxLmNvbS9wdXNoZ2FtZS92MS9kZXRhaWw/YXBwaWQ9MTExMDk3NjkyMyZBRFRBRz1hcmsuZ2FtZXNoYXJlJl93dj0yMTY0MjYwODY0Jl93d3Y9NDQ4JmZyb21fb2xkX2dhbWVjZW50ZXI9MSZhdXRvZG93bmxvYWQ9MSZhdXRvbGF1bmNoPTEmb3JpZ2luPW0uZ2FtZWNlbnRlci5xcS5jb20mal9mcm9tPTMwMWh0dHBz"));
+        } else {
+            alert("你被骗了");
         }
     </script>
 
