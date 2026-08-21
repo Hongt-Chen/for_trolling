@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- ✅ meta 标签放在 head 中 -->
+    <meta itemprop="name" content="开学倒计时" />
+    <meta itemprop="description" content="加载中..." />
+    <meta itemprop="image" content="https://hongt-chen.github.io/for_trolling/trolls/kaixue/image.jpg" />
+    
+    <style>
+        .box {
+            width: 300px;
+            height: 400px;
+            margin: 50px auto;
+            background-color: rgb(186, 186, 186);
+            text-align: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            transition: all 0.5s ease
+        }
+
+        .box:hover{
+            scale: 1.05;
+        }
+
+        .box p {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body style="background-color: rgb(169, 169, 169);">
+    <h1 style="text-align: center;">😭😭😭开学倒计时🥀🥀🥀</h1>
+    <div class="box">
+        <p>距离开学还有:</p>
+        <p id="countdown">计算中...</p>
+    </div>
+</body>
+
+<script>
+    function updateCountdown() {
+        const countdownElement = document.getElementById('countdown');
+        const now = new Date();
+        const targetDate = new Date('2026-09-01');
+        const timeDifference = targetDate - now;
+
+        if (timeDifference <= 0) {
+            countdownElement.textContent = '🎉 开学啦！';
+            // 更新 meta description
+            document.querySelector('meta[itemprop="description"]')
+                .setAttribute('content', '🎉 开学啦！');
+            return;
+        }
+
+        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+        const countdownText = `${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
+        countdownElement.textContent = countdownText;
+
+        // ✅ 直接修改 head 中的 meta
+        document.querySelector('meta[itemprop="description"]')
+            .setAttribute('content', countdownText);
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+</script>
+</html>
