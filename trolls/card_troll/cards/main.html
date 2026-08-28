@@ -155,7 +155,7 @@
             const name = getParam('name');
             const desc = getParam('description');
             const image = getParam('image');
-            const title = getParam('title');
+            const title = getParam('name');
 
             if (name) {
                 const metaName = document.getElementById('metaName');
@@ -243,9 +243,9 @@
 
             // 调用原生分享（必须同步调用）
             navigator.share({
-                // title: title,
-                // text: desc,
-                // url: url
+                title: title,
+                text: desc,
+                url: url
             })
             .then(() => {
                 console.log('✅ 分享成功');
