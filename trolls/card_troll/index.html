@@ -3,17 +3,91 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
         <title>卡片恶搞</title>
-
         <style>
+            body {
+                background: linear-gradient(180deg, #2b00ff 0%, #ce2bff 100%);
+                color: rgb(236, 236, 236);
+            }
+
             .box {
                 width: 300px;
-                height: 400px;
+                height: 200px;
                 margin: 50px auto;
                 background-color: rgb(49, 211, 240);
                 text-align: center;
                 border-radius: 10px;
+                padding: 10px 0;
+                overflow-y: auto;
+            }
+            .box a {
+                display: block;
+                padding: 8px;
+                color: #333;
+                text-decoration: none;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+                cursor: pointer;
+            }
+            .box a:hover {
+                background-color: rgba(255,255,255,0.3);
+            }
+
+            .DataInputer {
+                width: 300px;
+                padding: 20px;
+                margin: 20px auto;
+                background-color: rgba(49, 211, 240, 0.9);
+                text-align: center;
+                border-radius: 10px;
+            }
+            .DataInputer input,
+            .DataInputer button {
+                display: block;
+                width: 90%;
+                margin: 8px auto;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+            .DataInputer button {
+                background: #4CAF50;
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background 0.3s;
+            }
+            .DataInputer button:hover {
+                background: #45a049;
+            }
+
+            #statusMsg {
+                margin: 10px auto;
+                padding: 10px;
+                width: 300px;
+                text-align: center;
+                border-radius: 5px;
+                display: none;
+                font-weight: bold;
+                box-sizing: border-box;
+            }
+            #statusMsg.success {
+                display: block;
+                background: rgba(76, 175, 80, 0.8);
+                color: white;
+            }
+            #statusMsg.error {
+                display: block;
+                background: rgba(244, 67, 54, 0.8);
+                color: white;
+            }
+
+            .section-title {
+                text-align: center;
+                margin: 20px 0 10px 0;
+                font-size: 16px;
+                opacity: 0.9;
             }
         </style>
 
@@ -23,6 +97,18 @@
     </head>
     <body>
         <h1 style="text-align: center;">XML恶搞</h1>
+        
+        <div class="DataInputer">
+            <input type="text" placeholder="请输入即将跳转的地址（如：https://example.com）" id="jumpUrl">
+            <input type="datetime-local" id="datetimePicker">
+            <button id="saveButton">储存修改</button>
+            <button id="resetButton" style="background:#ff9800;">重置链接</button>
+        </div>
+
+        <!-- 状态提示 -->
+        <div id="statusMsg"></div>
+
+        <div class="section-title">恶搞卡片 请先填好上的信息</div>
         <div class="box">
             <p><a href="cards/couple.html">情侣关系</a></p>
             <p><a href="cards/svip.html">SVIP体验卡</a></p>
@@ -37,11 +123,139 @@
             <p><a href="cards/dahuiyuan.html">大会员体验卡</a></p>
         </div>
 
-        <hr>
-
-        <h1 style="text-align: center;">注入攻击</h1>
-        <div class="box">
-            <p><a href="attacks/xxl.html">XXL注入攻击</a></p>
+        <div class="section-title">快捷恶搞链接</div>
+        <div class="box" id="gameBox">
+            <!-- 由 JS 动态生成 -->
         </div>
+
+        <span style="display: block; text-align: center; margin-top: 20px;">
+            → <a href="../../index.html" style="color: white;">主站点这</a> ←
+        </span>
+
+        <script>
+            // ====== 游戏数据 ======
+            const gameList = [
+                { name: '原神', link: 'https://speed.gamecenter.qq.com/pushgame/v1/detail?appid=1110976923&ADTAG=ark.gameshare&_wv=2164260864&_wwv=448&from_old_gamecenter=1&autodownload=1&autolaunch=1&origin=m.gamecenter.qq.com&j_from=301https' },
+                { name: '王者荣耀', link: 'https://pvp.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '金铲铲', link: 'https://jcc.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '穿越火线', link: 'https://cfm.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '元梦之星', link: 'https://ymzx.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: 'QQ炫舞手游', link: 'https://x5m.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '罗布乐思', link: 'https://roblox.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '和平精英', link: 'https://gp.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: 'QQ飞车手游', link: 'https://speedm.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '暗区突围', link: 'https://aqtw.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '黎明觉醒', link: 'https://lmjx.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '英雄联盟手游', link: 'https://lolm.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '魂斗罗：归来', link: 'https://hdl.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '完美世界手游', link: 'https://world.qq.com/zlkdatasys/mct/d/play.shtml' },
+                { name: '新剑侠情缘手游', link: 'https://jxqy.qq.com/zlkdatasys/mct/d/play.shtml' }
+            ];
+
+            // ====== 生成游戏链接列表（点击填入输入框） ======
+            const gameBox = document.getElementById('gameBox');
+            const jumpUrlInput = document.getElementById('jumpUrl');
+
+            gameList.forEach(game => {
+                const p = document.createElement('p');
+                const a = document.createElement('a');
+                a.textContent = game.name;
+                a.href = '#';
+                a.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    jumpUrlInput.value = game.link;
+                    showStatus('已填入: ' + game.name, 'success');
+                });
+                p.appendChild(a);
+                gameBox.appendChild(p);
+            });
+
+            // ====== 获取元素 ======
+            const datetimePicker = document.getElementById('datetimePicker');
+            const saveButton = document.getElementById('saveButton');
+            const resetButton = document.getElementById('resetButton');
+            const statusMsg = document.getElementById('statusMsg');
+            const choices = document.querySelectorAll('.box a');
+
+            // ====== 保存原始链接（用于重置） ======
+            const originalHrefs = Array.from(choices).map(link => link.getAttribute('href'));
+
+            // ====== 设置默认时间为当前时间 ======
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            datetimePicker.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            // ====== 显示状态消息 ======
+            function showStatus(message, type = 'success') {
+                statusMsg.textContent = message;
+                statusMsg.className = type;
+                statusMsg.style.display = 'block';
+                setTimeout(() => {
+                    statusMsg.className = '';
+                    statusMsg.style.display = 'none';
+                }, 3000);
+            }
+
+            // ====== 按钮1：储存修改 ======
+            saveButton.onclick = function() {
+                const jumpUrl = jumpUrlInput.value.trim();
+                const timerRaw = datetimePicker.value;
+
+                if (!jumpUrl) {
+                    showStatus('请输入跳转地址！', 'error');
+                    return;
+                }
+
+                if (!timerRaw) {
+                    showStatus('请选择时间！', 'error');
+                    return;
+                }
+
+                const timer = timerRaw.replace(/[-:]/g, '').replace('T', '') + '00';
+
+                console.log('保存的跳转 URL:', jumpUrl);
+                console.log('保存的时间:', timer);
+
+                choices.forEach((choice, index) => {
+                    const originalHref = originalHrefs[index];
+                    if (originalHref.includes('?')) {
+                        const newHref = `${originalHref}&url=${encodeURIComponent(jumpUrl)}&timer=${timer}`;
+                        choice.setAttribute('href', newHref);
+                    } else {
+                        const newHref = `${originalHref}?url=${encodeURIComponent(jumpUrl)}&timer=${timer}`;
+                        choice.setAttribute('href', newHref);
+                    }
+                });
+
+                showStatus(`已修改链接`, 'success');
+                console.log('修改后的链接：');
+                choices.forEach(link => {
+                    console.log(`  ${link.textContent}: ${link.href}`);
+                });
+            };
+
+            // ====== 按钮2：重置链接 ======
+            resetButton.onclick = function() {
+                choices.forEach((link, index) => {
+                    link.setAttribute('href', originalHrefs[index]);
+                });
+                showStatus(`已重置链接`, 'success');
+                console.log('已重置所有链接');
+            };
+
+            // ====== 点击链接调试 ======
+            choices.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    console.log('点击了：' + this.textContent);
+                    console.log('  跳转地址：' + this.href);
+                });
+            });
+
+            console.log('页面加载完成');
+        </script>
     </body>
 </html>
