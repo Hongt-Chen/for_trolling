@@ -267,7 +267,7 @@
         function renderPage(timeNotReached) {
             const container = document.getElementById('appContainer');
             const timerStr = getParam('timer');
-            const title = getParam('title') || '想和你建立情侣关系';
+            const title = getParam('title');
 
             let html = `<h1>${title}</h1>`;
 
@@ -282,16 +282,16 @@
                     String(currentTime.getSeconds()).padStart(2, '0');
                 
                 html += `
-                    <p>⏰ 跳转时间未到</p>
-                    <p>⏱ 目标时间：<strong>${timerStr || '未设置'}</strong></p>
-                    <p>🕐 当前时间：${currentTime.toLocaleString()}</p>
+                    <p>跳转时间未到</p>
+                    <p>目标时间：<strong>${timerStr || '未设置'}</strong></p>
+                    <p>当前时间：${currentTime.toLocaleString()}</p>
                     <p style="font-size:12px;color:#999;">（格式：${formattedTime}）</p>
                     <button class="btn-share" id="shareBtn">📤 分享XML卡片</button>
                     <div class="info">
-                        <strong>💡 提示：</strong>点击按钮分享此卡片给好友
+                        <strong>提示：</strong>点击按钮分享此卡片给好友
                     </div>
                     <div class="time-info">
-                        浏览器支持情况：${navigator.share ? '✅ 支持原生分享' : '❌ 不支持原生分享，将使用复制链接'}
+                        浏览器支持情况：${navigator.share ? '快点分享吧！倒计时结束后将会直接跳转到目标网址' : '不支持分享哦，请换个浏览器'}
                     </div>
                 `;
             } else {
