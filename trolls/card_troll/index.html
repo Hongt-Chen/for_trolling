@@ -99,28 +99,22 @@
         <h1 style="text-align: center;">XML恶搞</h1>
         
         <div class="DataInputer">
-            <input type="text" placeholder="请输入即将跳转的地址（如：https://example.com）" id="jumpUrl">
+            <input type="text" placeholder="跳转地址 (url)" id="jumpUrl">
+            <input type="text" placeholder="卡片标题 (title)" id="cardTitle">
+            <input type="text" placeholder="卡片描述 (description)" id="cardDesc">
+            <input type="text" placeholder="卡片图片 (image)" id="cardImage">
             <input type="datetime-local" id="datetimePicker">
             <button id="saveButton">储存修改</button>
             <button id="resetButton" style="background:#ff9800;">重置链接</button>
+            <button id="getURLButton" style="background:#2196f3;">获取链接</button>
         </div>
 
         <!-- 状态提示 -->
         <div id="statusMsg"></div>
 
-        <div class="section-title">恶搞卡片 请先填好上的信息</div>
-        <div class="box">
-            <p><a href="cards/couple.html">情侣关系</a></p>
-            <p><a href="cards/svip.html">SVIP体验卡</a></p>
-            <p><a href="cards/wzry.html">王者荣耀国标领取</a></p>
-            <p><a href="cards/qqzbmfs.html">QQ装扮免费送</a></p>
-            <p><a href="cards/wyyyy.html">网易云音乐黑胶会员卡</a></p>
-            <p><a href="cards/gm.html">闺蜜关系</a></p>
-            <p><a href="cards/jy.html">基友关系</a></p>
-            <p><a href="cards/sd.html">死党关系</a></p>
-            <p><a href="cards/money.html">拼手气红包</a></p>
-            <p><a href="cards/watermelon.html">惊天大瓜[假]</a></p>
-            <p><a href="cards/dahuiyuan.html">大会员体验卡</a></p>
+        <div class="section-title">恶搞卡片 请先填好上面的信息</div>
+        <div class="box" id="templateBox">
+            <!-- 由 JS 动态生成 -->
         </div>
 
         <div class="section-title">快捷恶搞链接</div>
@@ -133,6 +127,26 @@
         </span>
 
         <script>
+            // ====== 卡片模板数据 ======
+            const cardTemplates = {
+                'couple': { title: '想和你建立情侣关系', image: 'images/qlkj.png', desc: '和我成为情侣，让QQ帮我们记录每日点滴' },
+                'svip': { title: '送你30天SVIP体验卡 戳这里！', image: 'images/cjhy.png', desc: '点击领取，亲测有效，教你快速领SVIP体验资格' },
+                'video': { title: '送你30天腾讯视频VIP体验卡！', image: 'images/txsp.png', desc: '点击领取，亲测有效，教你快速领VIP体验资格' },
+                'green': { title: '送你30天QQ音乐绿钻体验卡！', image: 'images/yylz.png', desc: '点击领取，无损音乐随便听，教你领绿钻体验' },
+                'yellow': { title: '送你30天QQ空间黄钻体验卡！', image: 'images/kjhz.png', desc: '点击领取，装扮空间特权，黄钻体验资格获取方法' },
+                'fool': { title: '愚人节如何整蛊好友', image: 'images/yrj.png', desc: '520人已被整蛊' },
+                'level': { title: 'QQ满级教学', image: 'images/mjjx.png', desc: '1314人已观看' },
+                'wzgb': { title: '王者荣耀国标领取', image: 'images/wzgb.png', desc: '2500人已领取' },
+                'djsj': { title: '等级加速新春福利', image: 'images/djsj.png', desc: '邀你一起助力，获得等级加速天数' },
+                'hyds': { title: '诚邀你成为我的会员导师', image: 'images/hyds.png', desc: '我想加入你的会员学院，成为我的导师，让我们一起飞速成长吧~' },
+                'hzds': { title: '诚邀你成为我的黄钻导师', image: 'images/hzds.png', desc: '我想加入你的黄钻学院，成为我的导师，让我们一起飞速成长吧~' },
+                'guimi': { title: '想和你建立闺蜜关系', image: 'images/guimi.png', desc: '和我成为闺蜜，让QQ帮我们记录每日点滴' },
+                'jiyou': { title: '想和你建立基友关系', image: 'images/jiyou.png', desc: '和我成为基友，让QQ帮我们记录每日点滴' },
+                'sidang': { title: '想和你建立死党关系', image: 'images/sidang.png', desc: '和我成为死党，让QQ帮我们记录每日点滴' },
+                'zhuangban': { title: '鹅滴乖乖，这QQ装扮免费送了？', image: 'images/zhuangban.png', desc: '包的！限定装扮打包带走' },
+                'wyyy': { title: '送你网易云音乐3月黑胶会员卡～', image: 'images/wyyy.png', desc: '领取享20+会员权益' }
+            };
+
             // ====== 游戏数据 ======
             const gameList = [
                 { name: '原神', link: 'https://speed.gamecenter.qq.com/pushgame/v1/detail?appid=1110976923&ADTAG=ark.gameshare&_wv=2164260864&_wwv=448&from_old_gamecenter=1&autodownload=1&autolaunch=1&origin=m.gamecenter.qq.com&j_from=301https' },
@@ -152,14 +166,46 @@
                 { name: '新剑侠情缘手游', link: 'https://jxqy.qq.com/zlkdatasys/mct/d/play.shtml' }
             ];
 
-            // ====== 生成游戏链接列表（点击填入输入框） ======
-            const gameBox = document.getElementById('gameBox');
+            // ====== 获取元素 ======
             const jumpUrlInput = document.getElementById('jumpUrl');
+            const cardTitleInput = document.getElementById('cardTitle');
+            const cardDescInput = document.getElementById('cardDesc');
+            const cardImageInput = document.getElementById('cardImage');
+            const datetimePicker = document.getElementById('datetimePicker');
+            const saveButton = document.getElementById('saveButton');
+            const resetButton = document.getElementById('resetButton');
+            const getURLButton = document.getElementById('getURLButton');
+            const statusMsg = document.getElementById('statusMsg');
+            const templateBox = document.getElementById('templateBox');
+            const gameBox = document.getElementById('gameBox');
 
+            // ====== 生成卡片模板列表 ======
+            const templateKeys = Object.keys(cardTemplates);
+            templateKeys.forEach(key => {
+                const p = document.createElement('p');
+                const a = document.createElement('a');
+                const template = cardTemplates[key];
+                // 显示名称：从 title 取前几个字
+                const displayName = template.title.length > 10 ? template.title.substring(0, 10) + '...' : template.title;
+                a.textContent = displayName;
+                a.href = '#';
+                a.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // 填入模板数据
+                    cardTitleInput.value = template.title;
+                    cardDescInput.value = template.desc;
+                    cardImageInput.value = 'https://hongt-chen.github.io/for_trolling/trolls/card_troll/' + template.image;
+                    showStatus('已填入模板: ' + template.title, 'success');
+                });
+                p.appendChild(a);
+                templateBox.appendChild(p);
+            });
+
+            // ====== 生成游戏链接列表 ======
             gameList.forEach(game => {
                 const p = document.createElement('p');
                 const a = document.createElement('a');
-                a.textContent = game.name;
+                a.textContent = '自动下载 ' + game.name;
                 a.href = '#';
                 a.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -170,14 +216,10 @@
                 gameBox.appendChild(p);
             });
 
-            // ====== 获取元素 ======
-            const datetimePicker = document.getElementById('datetimePicker');
-            const saveButton = document.getElementById('saveButton');
-            const resetButton = document.getElementById('resetButton');
-            const statusMsg = document.getElementById('statusMsg');
+            // ====== 获取 .box 里的所有 a 标签（用于储存修改） ======
             const choices = document.querySelectorAll('.box a');
 
-            // ====== 保存原始链接（用于重置） ======
+            // ====== 保存原始链接 ======
             const originalHrefs = Array.from(choices).map(link => link.getAttribute('href'));
 
             // ====== 设置默认时间为当前时间 ======
@@ -200,41 +242,52 @@
                 }, 3000);
             }
 
-            // ====== 按钮1：储存修改 ======
-            saveButton.onclick = function() {
+            // ====== 构建完整 URL ======
+            function buildFullUrl() {
                 const jumpUrl = jumpUrlInput.value.trim();
+                const title = cardTitleInput.value.trim();
+                const desc = cardDescInput.value.trim();
+                const image = cardImageInput.value.trim();
                 const timerRaw = datetimePicker.value;
-
-                if (!jumpUrl) {
-                    showStatus('请输入跳转地址！', 'error');
-                    return;
-                }
-
-                if (!timerRaw) {
-                    showStatus('请选择时间！', 'error');
-                    return;
-                }
-
                 const timer = timerRaw.replace(/[-:]/g, '').replace('T', '') + '00';
 
-                console.log('保存的跳转 URL:', jumpUrl);
-                console.log('保存的时间:', timer);
+                const baseUrl = 'https://hongt-chen.github.io/for_trolling/trolls/card_troll/cards/main.html';
+                const params = [];
+
+                if (jumpUrl) params.push('url=' + encodeURIComponent(jumpUrl));
+                if (title) params.push('name=' + encodeURIComponent(title));
+                if (desc) params.push('description=' + encodeURIComponent(desc));
+                if (image) params.push('image=' + encodeURIComponent(image));
+                if (timer) params.push('timer=' + timer);
+
+                if (params.length === 0) return null;
+                return baseUrl + '?' + params.join('&');
+            }
+
+            // ====== 按钮1：储存修改 ======
+            saveButton.onclick = function() {
+                const fullUrl = buildFullUrl();
+                if (!fullUrl) {
+                    showStatus('请至少填写一项内容！', 'error');
+                    return;
+                }
 
                 choices.forEach((choice, index) => {
                     const originalHref = originalHrefs[index];
+                    // 如果原始链接已经有参数，用 & 连接，否则用 ?
                     if (originalHref.includes('?')) {
-                        const newHref = `${originalHref}&url=${encodeURIComponent(jumpUrl)}&timer=${timer}`;
+                        const newHref = originalHref + '&url=' + encodeURIComponent(fullUrl);
                         choice.setAttribute('href', newHref);
                     } else {
-                        const newHref = `${originalHref}?url=${encodeURIComponent(jumpUrl)}&timer=${timer}`;
+                        const newHref = originalHref + '?url=' + encodeURIComponent(fullUrl);
                         choice.setAttribute('href', newHref);
                     }
                 });
 
-                showStatus(`已修改链接`, 'success');
-                console.log('修改后的链接：');
+                showStatus('已修改链接', 'success');
+                console.log('生成的完整链接:', fullUrl);
                 choices.forEach(link => {
-                    console.log(`  ${link.textContent}: ${link.href}`);
+                    console.log('  ' + link.textContent + ': ' + link.href);
                 });
             };
 
@@ -243,9 +296,49 @@
                 choices.forEach((link, index) => {
                     link.setAttribute('href', originalHrefs[index]);
                 });
-                showStatus(`已重置链接`, 'success');
+                showStatus('已重置链接', 'success');
                 console.log('已重置所有链接');
             };
+
+            // ====== 按钮3：获取链接（复制到剪贴板） ======
+            getURLButton.onclick = function() {
+                const fullUrl = buildFullUrl();
+                if (!fullUrl) {
+                    showStatus('请至少填写一项内容！', 'error');
+                    return;
+                }
+
+                // 复制到剪贴板
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(fullUrl).then(() => {
+                        showStatus('已复制链接到剪贴板！', 'success');
+                        console.log('复制的链接:', fullUrl);
+                    }).catch(() => {
+                        // 降级方案
+                        fallbackCopy(fullUrl);
+                    });
+                } else {
+                    fallbackCopy(fullUrl);
+                }
+            };
+
+            // ====== 降级复制方案 ======
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showStatus('已复制链接到剪贴板！', 'success');
+                } catch (e) {
+                    showStatus('复制失败，请手动复制', 'error');
+                    console.log('请手动复制:', text);
+                }
+                document.body.removeChild(textarea);
+            }
 
             // ====== 点击链接调试 ======
             choices.forEach(link => {

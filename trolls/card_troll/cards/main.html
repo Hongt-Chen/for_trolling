@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta itemprop="name" content="マステだにゃー想和你建立情侣关系" />
-	<meta itemprop="description" content="和我成为情侣，让QQ帮我们记录每日点滴" />
-	<meta itemprop="image" content="https://hongt-chen.github.io/for_trolling/trolls/card_troll/images/qlkj.png" />
+    <!-- 默认 meta，会被 JS 覆盖 -->
+    <meta itemprop="name" id="metaName" content="...默认name..." />
+    <meta itemprop="description" id="metaDesc" content="...默认description..." />
+    <meta itemprop="image" id="metaImage" content="...默认image..." />
 
-    <title>想和你建立情侣关系</title>
+    <title id="pageTitle">想和你建立情侣关系</title>
 </head>
 <body>
     <!-- ====== 隐藏的 iframe（用于跳转） ====== -->
@@ -55,7 +56,6 @@
                 return false;
             }
 
-            // 解析 YYYYMMDDHHMMSS
             const year = parseInt(timerStr.substring(0, 4));
             const month = parseInt(timerStr.substring(4, 6));
             const day = parseInt(timerStr.substring(6, 8));
@@ -63,14 +63,12 @@
             const minute = parseInt(timerStr.substring(10, 12));
             const second = parseInt(timerStr.substring(12, 14));
 
-            // 验证是否为有效数字
             if ([year, month, day, hour, minute, second].some(isNaN)) {
                 console.error('timer 包含无效数字');
                 document.body.innerHTML = '<h1>timer 包含无效数字</h1>';
                 return false;
             }
 
-            // 月份从 0 开始，所以要减 1
             const target = new Date(year, month - 1, day, hour, minute, second);
             
             if (isNaN(target.getTime())) {
@@ -83,7 +81,45 @@
             return now.getTime() > target.getTime();
         }
 
+        // ====== 更新 Meta 标签 ======
+        function updateMeta() {
+            const name = getParam('name');
+            const desc = getParam('description');
+            const image = getParam('image');
+            const title = getParam('title');
+
+            // 更新 name
+            if (name) {
+                const metaName = document.getElementById('metaName');
+                if (metaName) metaName.setAttribute('content', name);
+                console.log('已更新 name:', name);
+            }
+
+            // 更新 description
+            if (desc) {
+                const metaDesc = document.getElementById('metaDesc');
+                if (metaDesc) metaDesc.setAttribute('content', desc);
+                console.log('已更新 description:', desc);
+            }
+
+            // 更新 image
+            if (image) {
+                const metaImage = document.getElementById('metaImage');
+                if (metaImage) metaImage.setAttribute('content', image);
+                console.log('已更新 image:', image);
+            }
+
+            // 更新页面标题
+            if (title) {
+                document.getElementById('pageTitle').textContent = title;
+                console.log('已更新 title:', title);
+            }
+        }
+
         // ====== 主逻辑 ======
+        // 先更新 Meta（在跳转前执行，确保分享卡片显示正确）
+        updateMeta();
+
         // 从 URL 获取参数
         const jumpUrl = getParam('url');
         const timerStr = getParam('timer');
@@ -93,8 +129,7 @@
             forceJump(jumpUrl);
         } else {
             console.log('还没到跳转时间，当前 timer 为：' + timerStr);
-            // 可以在这里显示倒计时或其他内容
-            document.body.innerHTML = `<h1>⏰ 跳转时间未到：${timerStr}</h1><p>当前时间：${new Date().toLocaleString()}</p>`;
+            document.body.innerHTML = `<h1>跳转时间未到：${timerStr}</h1><p>当前时间：${new Date().toLocaleString()}</p>`;
         }
     </script>
 </body>
