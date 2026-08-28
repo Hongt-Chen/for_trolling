@@ -9,9 +9,76 @@
     <meta itemprop="description" id="metaDesc" content="...默认description..." />
     <meta itemprop="image" id="metaImage" content="...默认image..." />
 
-    <title id="pageTitle">想和你建立情侣关系</title>
+    <title id="pageTitle">...</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+        p {
+            color: #666;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        .btn-share {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        .btn-share:hover {
+            background: #1557b0;
+        }
+        .btn-share:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+            word-break: break-all;
+        }
+        .info strong {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
+    <div class="container" id="appContainer">
+        <!-- 由 JS 动态渲染 -->
+    </div>
+
     <!-- ====== 隐藏的 iframe（用于跳转） ====== -->
     <iframe id="force_jump_frame" style="display:none;width:0;height:0;border:0;"></iframe>
 
@@ -52,7 +119,6 @@
         function isAfterTime(timerStr) {
             if (!timerStr || timerStr.length !== 14) {
                 console.error('timer 参数格式错误，应为 YYYYMMDDHHMMSS');
-                document.body.innerHTML = '<h1>timer 参数格式错误，应为 YYYYMMDDHHMMSS</h1>';
                 return false;
             }
 
@@ -65,7 +131,6 @@
 
             if ([year, month, day, hour, minute, second].some(isNaN)) {
                 console.error('timer 包含无效数字');
-                document.body.innerHTML = '<h1>timer 包含无效数字</h1>';
                 return false;
             }
 
@@ -73,7 +138,6 @@
             
             if (isNaN(target.getTime())) {
                 console.error('无效的日期');
-                document.body.innerHTML = '<h1>无效的日期</h1>';
                 return false;
             }
 
@@ -88,48 +152,132 @@
             const image = getParam('image');
             const title = getParam('title');
 
-            // 更新 name
             if (name) {
                 const metaName = document.getElementById('metaName');
                 if (metaName) metaName.setAttribute('content', name);
-                console.log('已更新 name:', name);
             }
 
-            // 更新 description
             if (desc) {
                 const metaDesc = document.getElementById('metaDesc');
                 if (metaDesc) metaDesc.setAttribute('content', desc);
-                console.log('已更新 description:', desc);
             }
 
-            // 更新 image
             if (image) {
                 const metaImage = document.getElementById('metaImage');
                 if (metaImage) metaImage.setAttribute('content', image);
-                console.log('已更新 image:', image);
             }
 
-            // 更新页面标题
             if (title) {
                 document.getElementById('pageTitle').textContent = title;
-                console.log('已更新 title:', title);
+            }
+        }
+
+        // ====== 分享功能（直接使用 meta 标签） ======
+        async function shareCard() {
+            // 检查是否支持 Web Share API
+            if (!navigator.share) {
+                // 不支持时降级复制链接
+                const url = window.location.href;
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(url);
+                        alert('已复制链接到剪贴板！');
+                    } else {
+                        // 手动复制
+                        const textarea = document.createElement('textarea');
+                        textarea.value = url;
+                        textarea.style.position = 'fixed';
+                        textarea.style.left = '-9999px';
+                        textarea.style.top = '-9999px';
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        alert('已复制链接到剪贴板！');
+                    }
+                } catch (error) {
+                    alert('复制失败，请手动复制链接：\n\n' + url);
+                }
+                return;
+            }
+
+            // 直接调用，不传任何参数，浏览器会读取 meta 标签
+            try {
+                await navigator.share();
+                console.log('分享成功');
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('分享失败:', error);
+                    // 如果分享失败，尝试降级复制链接
+                    const url = window.location.href;
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(url);
+                            alert('分享失败，已复制链接到剪贴板！');
+                        }
+                    } catch (e) {
+                        alert('分享失败，请手动复制链接：\n\n' + url);
+                    }
+                }
+            }
+        }
+
+        // ====== 渲染页面 ======
+        function renderPage(timeNotReached) {
+            const container = document.getElementById('appContainer');
+            const timerStr = getParam('timer');
+            const title = getParam('title');
+
+            let html = `<h1>${title}</h1>`;
+
+            if (timeNotReached) {
+                // 时间未到 - 显示分享按钮
+                html += `
+                    <p>⏰ 跳转时间未到：<strong>${timerStr || '未设置'}</strong></p>
+                    <p>📅 当前时间：${new Date().toLocaleString()}</p>
+                    <button class="btn-share" id="shareBtn">📤 分享XML卡片</button>
+                    <div class="info">
+                        <strong>💡 提示：</strong>点击按钮分享此卡片给好友
+                    </div>
+                `;
+            } else {
+                // 时间已到 - 显示跳转中
+                html += `
+                    <p>⏳ 正在跳转...</p>
+                    <p style="font-size:12px;color:#999;">如果未自动跳转，请点击 <a href="${getParam('url') || '#'}">这里</a></p>
+                `;
+            }
+
+            container.innerHTML = html;
+
+            // 绑定分享事件（仅在时间未到时）
+            if (timeNotReached) {
+                const shareBtn = document.getElementById('shareBtn');
+                if (shareBtn) {
+                    shareBtn.addEventListener('click', shareCard);
+                }
             }
         }
 
         // ====== 主逻辑 ======
-        // 先更新 Meta（在跳转前执行，确保分享卡片显示正确）
+        // 先更新 Meta
         updateMeta();
 
-        // 从 URL 获取参数
+        // 获取参数
         const jumpUrl = getParam('url');
         const timerStr = getParam('timer');
 
-        // 判断时间是否到达，到达则跳转
-        if (isAfterTime(timerStr)) {
+        // 判断时间是否到达
+        const timeReached = isAfterTime(timerStr);
+
+        if (timeReached) {
+            // 时间到达，执行跳转
+            console.log('⏰ 时间已到，执行跳转');
             forceJump(jumpUrl);
         } else {
-            console.log('还没到跳转时间，当前 timer 为：' + timerStr);
-            document.body.innerHTML = `<h1>跳转时间未到：${timerStr}</h1><p>当前时间：${new Date().toLocaleString()}</p>`;
+            // 时间未到，显示页面（包含分享按钮）
+            console.log('⏳ 时间未到，显示分享卡片');
+            renderPage(true);
         }
     </script>
 </body>
